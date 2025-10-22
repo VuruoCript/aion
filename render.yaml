@@ -52,7 +52,6 @@ services:
   - type: web
     name: aion-frontend
     env: static
-    region: oregon
     buildCommand: cd iatrade/frontend && npm install && npm run build
     staticPublishPath: ./iatrade/frontend/dist
     pullRequestPreviewsEnabled: true
