@@ -8,8 +8,9 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: cd iatrade/backend && npm install
-    startCommand: cd iatrade/backend && npm run start
+    rootDir: iatrade/backend
+    buildCommand: npm install
+    startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
@@ -52,8 +53,9 @@ services:
   - type: web
     name: aion-frontend
     env: static
-    buildCommand: cd iatrade/frontend && npm install && npm run build
-    staticPublishPath: ./iatrade/frontend/dist
+    rootDir: iatrade/frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
     pullRequestPreviewsEnabled: true
     envVars:
       - key: VITE_API_URL
