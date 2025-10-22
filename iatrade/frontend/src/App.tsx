@@ -931,22 +931,13 @@ const App: React.FC = () => {
         <div className={`rounded-lg p-4 sm:p-6 text-center fade-in ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
           <div className="flex items-center justify-center gap-4 sm:gap-6 mb-3 sm:mb-4">
             <a
-              href="https://x.com"
+              href="https://x.com/aion_autonomous?s=21"
               target="_blank"
               rel="noopener noreferrer"
               className={`flex items-center gap-1.5 sm:gap-2 transition-colors ${darkMode ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#00d28a]'}`}
             >
               <X size={18} className="sm:w-5 sm:h-5" />
-              <span className="text-xs sm:text-sm font-medium">X</span>
-            </a>
-            <a
-              href="https://t.me"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center gap-1.5 sm:gap-2 transition-colors ${darkMode ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#00d28a]'}`}
-            >
-              <Send size={18} className="sm:w-5 sm:h-5" />
-              <span className="text-xs sm:text-sm font-medium">Telegram</span>
+              <span className="text-xs sm:text-sm font-medium">X (Twitter)</span>
             </a>
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
