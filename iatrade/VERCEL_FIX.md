@@ -37,11 +37,16 @@ The AION Trading System was originally built for **persistent servers** with Web
 
 ### New API Endpoints:
 
-- `GET /api/health` - Health check
-- `GET /api/state` - Get mock trading state
-- `POST /api/start` - No-op (returns info message)
-- `POST /api/stop` - No-op (returns info message)
+**Working Endpoints:**
+- `GET /api/health` - Health check and status
+- `GET /api/state` - Get mock trading state (used by frontend)
+
+**Note:** The following endpoints exist in `/api/index.ts` but are primarily for backward compatibility:
+- `POST /api/start` - No-op in serverless mode
+- `POST /api/stop` - No-op in serverless mode
 - `POST /api/reset` - Returns initial state
+
+For the frontend to work correctly on Vercel, it only needs `/api/state` which provides mock trading data.
 
 ## 🚀 Recommended: Use Railway for Full Features
 
