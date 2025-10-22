@@ -199,7 +199,7 @@ const App: React.FC = () => {
   const [hoveredTrader, setHoveredTrader] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000';
+  const CONTRACT_ADDRESS = '0xc52469466e4b7cc92c6410a7ad40165ce3974444';
 
   // Copy contract address function
   const copyContractAddress = async () => {
@@ -439,11 +439,14 @@ const App: React.FC = () => {
             >
               LEADERBOARD
             </button>
-            <button
-              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold rounded-lg transition-all ${darkMode ? 'bg-[#00d28a] text-black hover:bg-[#00d28a]/80' : 'bg-black text-white hover:bg-black/80'}`}
+            <a
+              href="https://gmgn.ai/bsc/token/0xc52469466e4b7cc92c6410a7ad40165ce3974444"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold rounded-lg transition-all text-center ${darkMode ? 'bg-[#00d28a] text-black hover:bg-[#00d28a]/80' : 'bg-black text-white hover:bg-black/80'}`}
             >
               BUY NOW
-            </button>
+            </a>
           </div>
         </div>
 
