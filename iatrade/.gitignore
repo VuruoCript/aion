@@ -6,7 +6,14 @@ yarn.lock
 # Environment variables
 .env
 .env.local
-.env.production
+.env.production.local
+.env.development.local
+
+# Keep .env.example and .env.production template
+!.env.example
+!.env.production
+!frontend/.env.example
+!backend/.env.example
 
 # Logs
 logs/

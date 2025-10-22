@@ -1,0 +1,24 @@
+# Vercel Ignore File
+# Files and directories to ignore during Vercel deployment
+
+node_modules/
+.git/
+.env.local
+.env.development.local
+*.log
+logs/
+coverage/
+.cache/
+temp/
+tmp/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Keep these for deployment
+!.env.example
+!.env.production

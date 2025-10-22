@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/server-new.ts",
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 60,
+        "includeFiles": ["data/**"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "src/server-new.ts"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "src/server-new.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/server-new.ts"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
