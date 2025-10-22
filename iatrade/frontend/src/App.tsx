@@ -134,7 +134,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p style={{ marginBottom: '8px', fontWeight: 'bold', color: '#4dffa1' }}>{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} style={{ margin: '4px 0', fontSize: '12px' }}>
-            <span style={{ color: entry.color }}>{entry.name}: </span>
+            <span style={{ color: entry.name === 'GROK' ? '#a0a0a0' : entry.color }}>{entry.name}: </span>
             <span style={{ fontWeight: 'bold' }}>
               ${typeof entry.value === 'number' ? entry.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : entry.value}
             </span>
