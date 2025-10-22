@@ -9,7 +9,7 @@ services:
     region: oregon
     plan: free
     rootDir: iatrade/backend
-    buildCommand: npm install
+    buildCommand: npm ci --production=false
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
