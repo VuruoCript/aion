@@ -58,6 +58,8 @@ Visit your frontend URL and check:
 - ✅ Dashboard displays
 - ✅ Check browser console for connection status
 
+**Note**: The frontend automatically detects Vercel serverless mode and uses REST API polling instead of WebSocket. You'll see "🔄 Serverless mode detected - using REST API polling" in the console.
+
 ## ⚠️ Important Notes
 
 ### WebSocket Limitations

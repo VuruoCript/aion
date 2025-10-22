@@ -30,6 +30,11 @@ The AION Trading System was originally built for **persistent servers** with Web
 
 3. **Added root `package.json`** - Dependencies for API
 
+4. **Smart Frontend Fallback** - Automatic detection
+   - Detects Vercel serverless environment
+   - Falls back to REST polling when WebSocket unavailable
+   - Seamless transition between modes
+
 ### New API Endpoints:
 
 - `GET /api/health` - Health check
