@@ -113,8 +113,10 @@ function executeTrades() {
   io.emit('traders:update', appState.aiTraders);
   io.emit('messages:update', appState.messages);
 
-  // Save to disk
-  dataPersistence.save(appState);
+  // Save to disk less frequently (every 6th trade = every 30 seconds)
+  if (appState.messages.length % 6 === 0) {
+    dataPersistence.save(appState);
+  }
 }
 
 function updateChart() {
@@ -124,11 +126,18 @@ function updateChart() {
   });
   appState.chartData = [...appState.chartData, newPoint];
 
+  // Limit chart data to last 500 points to avoid memory bloat
+  if (appState.chartData.length > 500) {
+    appState.chartData = appState.chartData.slice(-500);
+  }
+
   // Broadcast chart update
   io.emit('chart:update', appState.chartData);
 
-  // Save to disk
-  dataPersistence.save(appState);
+  // Save to disk less frequently (every 30 seconds instead of 5)
+  if (appState.chartData.length % 6 === 0) {
+    dataPersistence.save(appState);
+  }
 }
 
 function updateRuntime() {
@@ -225,6 +234,9 @@ app.post('/api/reset', async (req, res) => {
 
   // Broadcast reset to all clients
   io.emit('initial:state', appState);
+
+  // Restart trading engine
+  startTradingEngine();
 
   res.json({ message: 'State reset', state: appState });
 });

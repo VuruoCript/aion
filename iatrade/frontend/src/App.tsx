@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, LineChart, ReferenceLine } from 'recharts';
-import { TrendingUp, Activity, DollarSign, Send, Info, Moon, Sun } from 'lucide-react';
+import { TrendingUp, Activity, DollarSign, Send, Info, Moon, Sun, Copy, Check } from 'lucide-react';
 import { X } from 'lucide-react';
 import { useSocket } from './hooks/useSocket';
 import {
@@ -196,6 +196,21 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'leaderboard'>('dashboard');
   const [chartTimeframe, setChartTimeframe] = useState<'ALL' | '15M' | '1H' | '4H'>('ALL');
   const [chartDisplayMode, setChartDisplayMode] = useState<'$' | '%'>('$');
+  const [hoveredTrader, setHoveredTrader] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+  // Copy contract address function
+  const copyContractAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTRACT_ADDRESS);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   // All trading logic is now handled by the backend via Socket.IO
 
@@ -328,7 +343,7 @@ const App: React.FC = () => {
         <div className="w-full max-w-2xl">
           {/* Logo */}
           <div className="flex justify-center mb-12">
-            <img src="/logo.png" alt="Logo" className="h-[512px] opacity-80 animate-pulse" />
+            <img src="/logo.png" alt="Logo" className="h-[200px] sm:h-[256px] md:h-[300px] opacity-80 animate-pulse" />
           </div>
 
           {/* Loading Message */}
@@ -384,13 +399,16 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen p-3 sm:p-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-      <div className="max-w-[1920px] mx-auto space-y-3 sm:space-y-6">
+    <div className={`min-h-screen p-2 sm:p-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      <div className="max-w-[1920px] mx-auto space-y-2 sm:space-y-4">
 
         {/* Header */}
         <div className="fade-in mb-2">
           <div className="relative flex items-center justify-center">
-            <img src={darkMode ? logo2 : logo3black} alt="Logo" className="h-24 sm:h-32 md:h-48 lg:h-[256px] opacity-90 hover:opacity-100 transition-opacity" />
+            {/* Logo - Increased size */}
+            <img src={darkMode ? logo2 : logo3black} alt="Logo" className="h-36 sm:h-48 md:h-60 lg:h-72 opacity-90 hover:opacity-100 transition-opacity" />
+
+            {/* Theme Toggle - Top Right */}
             <button
               onClick={() => setDarkMode(!darkMode)}
               className={`absolute right-0 top-0 p-2 sm:p-3 rounded-lg transition-all ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}
@@ -420,6 +438,11 @@ const App: React.FC = () => {
               }`}
             >
               LEADERBOARD
+            </button>
+            <button
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-bold rounded-lg transition-all ${darkMode ? 'bg-[#00d28a] text-black hover:bg-[#00d28a]/80' : 'bg-black text-white hover:bg-black/80'}`}
+            >
+              BUY NOW
             </button>
           </div>
         </div>
@@ -551,9 +574,39 @@ const App: React.FC = () => {
         {/* Dashboard Page */}
         {currentPage === 'dashboard' && (
         <>
+        {/* Contract Address */}
+        <div className="fade-in mb-3">
+          <h3 className={`text-sm sm:text-base font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>CONTRACT ADDRESS</h3>
+          <div className="max-w-2xl">
+            <div className={`flex items-center gap-2 rounded-lg p-3 ${darkMode ? 'bg-white/10' : 'bg-gray-200'}`}>
+              <input
+                type="text"
+                value={CONTRACT_ADDRESS}
+                readOnly
+                className={`flex-1 text-xs sm:text-sm md:text-base font-mono px-3 py-2 rounded ${darkMode ? 'bg-black/30 text-white border border-[#00d28a]/30' : 'bg-white text-gray-900 border border-gray-300'} focus:outline-none`}
+              />
+              <div className="relative flex items-center gap-2">
+                <button
+                  onClick={copyContractAddress}
+                  className={`p-2 sm:p-2.5 rounded transition-all ${darkMode ? 'bg-[#00d28a]/20 hover:bg-[#00d28a]/30 text-[#00d28a]' : 'bg-black/10 hover:bg-black/20 text-gray-700'}`}
+                  title="Copy contract address"
+                >
+                  {copied ? <Check size={20} className="sm:w-6 sm:h-6" /> : <Copy size={20} className="sm:w-6 sm:h-6" />}
+                </button>
+                {/* Copied Tooltip - Right side */}
+                {copied && (
+                  <div className={`absolute left-full ml-3 px-4 py-2 rounded text-sm font-bold whitespace-nowrap animate-fade-in ${darkMode ? 'bg-[#00d28a] text-black' : 'bg-black text-white'}`}>
+                    Copied!
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 fade-in">
-          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass' : 'glass-light'}`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 fade-in">
+          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass border border-[#00d28a]/30' : 'glass-light border border-gray-300'}`}>
             <div className={`flex items-center gap-2 mb-2 text-xs ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>
               <DollarSign size={14} />
               <span>TOTAL PORTFOLIO</span>
@@ -566,7 +619,7 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass' : 'glass-light'}`}>
+          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass border border-[#00d28a]/30' : 'glass-light border border-gray-300'}`}>
             <div className={`flex items-center gap-2 mb-2 text-xs ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>
               <Activity size={14} />
               <span>ACTIVE TRADERS</span>
@@ -575,7 +628,7 @@ const App: React.FC = () => {
             <div className={`text-sm ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>ALL SYSTEMS ONLINE</div>
           </div>
 
-          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass' : 'glass-light'}`}>
+          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass border border-[#00d28a]/30' : 'glass-light border border-gray-300'}`}>
             <div className={`flex items-center gap-2 mb-2 text-xs ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>
               <TrendingUp size={14} />
               <span>TOP PERFORMER</span>
@@ -588,24 +641,24 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass' : 'glass-light'}`}>
+          <div className={`rounded-lg p-3 sm:p-4 stats-card-green ${darkMode ? 'glass border border-[#00d28a]/30' : 'glass-light border border-gray-300'}`}>
             <div className={`flex items-center gap-2 mb-2 text-xs ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>
               <Activity size={14} />
               <span>RUNTIME</span>
             </div>
             <div className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              {Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}
+              {Math.floor(timeElapsed / 3600).toString().padStart(2, '0')}:{Math.floor((timeElapsed % 3600) / 60).toString().padStart(2, '0')}:{(timeElapsed % 60).toString().padStart(2, '0')}
             </div>
-            <div className={`text-sm ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>MINUTES ELAPSED</div>
+            <div className={`text-sm ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>HOURS:MINUTES:SECONDS</div>
           </div>
         </div>
 
         {/* Crypto Prices Card */}
-        <div className={`rounded-lg p-3 sm:p-6 fade-in ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
-          <h2 className={`text-lg sm:text-xl font-bold mb-3 sm:mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>LIVE CRYPTO PRICES</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+        <div className={`rounded-lg p-2 sm:p-3 fade-in ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
+          <h2 className={`text-base sm:text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>LIVE CRYPTO PRICES</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {cryptoPrices.map((crypto) => (
-              <div key={crypto.symbol} className={`rounded-lg p-3 sm:p-4 transition-all ${darkMode ? 'bg-white/5 hover:bg-white/10 border border-white/10' : 'border border-gray-200 bg-gray-50 hover:bg-gray-100'}`}>
+              <div key={crypto.symbol} className={`rounded-lg p-2 transition-all ${darkMode ? 'bg-white/5 hover:bg-white/10 border border-white/10' : 'border border-gray-200 bg-gray-50 hover:bg-gray-100'}`}>
                 <div className="flex items-center gap-2 mb-2">
                   <img
                     src={`https://assets.coincap.io/assets/icons/${crypto.symbol.toLowerCase()}@2x.png`}
@@ -642,11 +695,11 @@ const App: React.FC = () => {
         </div>
 
         {/* Chart and Live Feed */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 fade-in">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 fade-in">
           {/* Chart - 2 columns on desktop, full width on mobile */}
-          <div className={`lg:col-span-2 rounded-lg p-3 sm:p-4 ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
-            <div className="mb-3 sm:mb-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
+          <div className={`lg:col-span-2 rounded-lg p-2 sm:p-3 ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
+            <div className="mb-2 sm:mb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-2">
                 <h2 className={`text-lg sm:text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>TOTAL ACCOUNT VALUE</h2>
                 <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2 sm:pb-0">
                   {selectedChartTrader && (
@@ -683,7 +736,7 @@ const App: React.FC = () => {
                 </button>
               </div>
               </div>
-              <div className="flex gap-2 mb-2">
+              <div className="flex gap-2 mb-4">
                 <button
                   onClick={() => setChartDisplayMode('$')}
                   className={`px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold rounded ${chartDisplayMode === '$' ? (darkMode ? 'bg-[#00d28a] text-black' : 'bg-black text-white') : (darkMode ? 'border border-[#00d28a] text-white' : 'border border-black text-black')}`}
@@ -698,16 +751,20 @@ const App: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="h-[400px] sm:h-[700px] lg:h-[1000px] w-full">
+            <div className="h-[300px] sm:h-[400px] lg:h-[500px] w-full">
               {(() => {
                 // Filter chart data based on timeframe
-                const filteredChartData = chartTimeframe === 'ALL' ? chartData : (() => {
-                  const now = Date.now();
+                const filteredChartData = (() => {
+                  if (chartTimeframe === 'ALL') {
+                    // Even in ALL mode, limit to last 100 points to keep chart readable
+                    // 100 points = ~8.3 minutes of data (1 point every 5 seconds)
+                    return chartData.slice(-100);
+                  }
+
                   const timeframeMinutes = chartTimeframe === '15M' ? 15 : chartTimeframe === '1H' ? 60 : 240;
-                  const cutoffTime = now - (timeframeMinutes * 60 * 1000);
 
                   // Since we don't have timestamps, use last N points (approximate)
-                  const pointsPerMinute = 1 / 5; // 1 point every 5 seconds = 12 points per minute
+                  const pointsPerMinute = 12; // 1 point every 5 seconds = 12 points per minute
                   const pointsToShow = Math.ceil(timeframeMinutes * pointsPerMinute);
 
                   return chartData.slice(-pointsToShow);
@@ -753,7 +810,7 @@ const App: React.FC = () => {
                   strokeWidth={2}
                   label={{ value: chartDisplayMode === '$' ? '$200 (Initial Balance)' : '0% (Initial Balance)', position: 'right', fill: darkMode ? '#00d28a' : '#666666' }}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />} cursor={false} />
                 {aiTraders
                   .filter(trader => !selectedChartTrader || trader.name === selectedChartTrader)
                   .map((trader) => (
@@ -762,8 +819,19 @@ const App: React.FC = () => {
                     type="monotone"
                     dataKey={trader.name}
                     stroke={trader.color}
-                    strokeWidth={3}
+                    strokeWidth={hoveredTrader === trader.name ? 5 : 3}
+                    strokeOpacity={hoveredTrader && hoveredTrader !== trader.name ? 0.15 : 1}
                     dot={(props) => <CustomDot {...props} aiTraders={aiTraders} chartData={filteredChartData} onClick={setSelectedChartTrader} />}
+                    activeDot={{
+                      r: 8,
+                      cursor: 'pointer',
+                      onClick: () => setSelectedChartTrader(trader.name),
+                      onMouseEnter: () => setHoveredTrader(trader.name),
+                      onMouseLeave: () => setHoveredTrader(null),
+                      fill: trader.color,
+                      stroke: trader.color,
+                      strokeWidth: 2
+                    }}
                     animationDuration={1000}
                     animationEasing="ease-in-out"
                   />
@@ -776,11 +844,11 @@ const App: React.FC = () => {
           </div>
 
           {/* Live Feed and AI Traders - 1 column on the right, full width on mobile */}
-          <div className="space-y-3 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-4">
             {/* Live Feed with Tabs */}
-            <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
+            <div className={`rounded-lg p-2 sm:p-3 ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
               {/* Tabs Header */}
-              <div className="flex items-center gap-2 sm:gap-4 mb-3 border-b pb-2 overflow-x-auto" style={{ borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+              <div className="flex items-center gap-2 sm:gap-4 mb-2 border-b pb-2 overflow-x-auto" style={{ borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
                 <button
                   onClick={() => setLiveFeedTab('feed')}
                   className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 rounded text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
@@ -821,12 +889,12 @@ const App: React.FC = () => {
 
               {/* Tab Content */}
               {liveFeedTab === 'feed' ? (
-                <div className="space-y-2 h-[300px] sm:h-[400px] overflow-y-auto pr-2">
+                <div className="space-y-2 h-[200px] sm:h-[220px] overflow-y-auto pr-2">
               {messages.filter(msg => selectedTraderFilter === 'ALL' || msg.trader === selectedTraderFilter).map((msg, idx) => {
                 const trader = aiTraders.find(t => t.name === msg.trader);
                 const badgeColor = trader ? trader.color : '#00d28a';
                 return (
-                  <div key={idx} className={`rounded p-3 ${darkMode ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-200'}`}>
+                  <div key={idx} className={`rounded p-2 ${darkMode ? 'bg-white/5 border border-white/10' : 'bg-gray-50 border border-gray-200'}`}>
                     <div className="flex items-center gap-2 mb-1.5">
                       <span
                         className="text-[11px] font-bold px-2 py-1 rounded text-white"
@@ -848,7 +916,7 @@ const App: React.FC = () => {
               )}
                 </div>
               ) : (
-                <div className="h-[300px] sm:h-[400px] overflow-y-auto pr-2">
+                <div className="h-[200px] sm:h-[220px] overflow-y-auto pr-2">
                   <div className={`space-y-3 sm:space-y-4 ${darkMode ? 'text-white/80' : 'text-gray-700'}`}>
                     <div>
                       <h3 className={`text-lg sm:text-xl font-bold mb-2 ${darkMode ? 'text-[#4dffa1]' : 'text-[#00d28a]'}`}>Welcome to AION</h3>
@@ -890,9 +958,9 @@ const App: React.FC = () => {
             </div>
 
             {/* AI Traders */}
-            <div className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
-              <h2 className={`text-base sm:text-lg font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>AION TRADERS - AI</h2>
-              <div className="space-y-2 h-[300px] sm:h-[250px] lg:h-[555px] overflow-y-auto pr-2">
+            <div className={`rounded-lg p-2 sm:p-3 ${darkMode ? 'glass' : 'glass-light border border-gray-300'}`}>
+              <h2 className={`text-base sm:text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>AION TRADERS - AI</h2>
+              <div className="space-y-2 h-[200px] sm:h-[220px] lg:h-[250px] overflow-y-auto pr-2">
               {[...aiTraders].sort((a, b) => b.balance - a.balance).map((trader, idx) => (
                 <div key={trader.name} className={`rounded-lg p-3 sm:p-4 ${darkMode ? 'bg-white/5 border border-white/10' : 'border border-gray-200 bg-gray-50'}`}>
                   <div className="flex items-center justify-between mb-2">
@@ -934,17 +1002,19 @@ const App: React.FC = () => {
               href="https://x.com/aion_autonomous?s=21"
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex items-center gap-1.5 sm:gap-2 transition-colors ${darkMode ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#00d28a]'}`}
+              className={`transition-colors ${darkMode ? 'text-white/80 hover:text-white' : 'text-gray-700 hover:text-[#00d28a]'}`}
             >
-              <X size={18} className="sm:w-5 sm:h-5" />
-              <span className="text-xs sm:text-sm font-medium">X (Twitter)</span>
+              <X size={28} className="sm:w-8 sm:h-8" />
             </a>
           </div>
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-[#00d28a] rounded-full animate-pulse"></div>
-            <p className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Online with Aster</p>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-[#00d28a] rounded-full animate-pulse"></div>
+              <p className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Online with Aster</p>
+            </div>
+            <span className={`text-xs sm:text-sm ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>•</span>
+            <p className={`text-xs sm:text-sm ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>AUTOMATED AI TRADING SYSTEM • 24/7 MONITORING • RISK MANAGED</p>
           </div>
-          <p className={`text-[10px] sm:text-xs ${darkMode ? 'text-white/60' : 'text-gray-500'}`}>AUTOMATED AI TRADING SYSTEM • 24/7 MONITORING • RISK MANAGED</p>
         </div>
         </>
         )}
