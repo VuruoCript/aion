@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { DataPersistence } from './services/DataPersistence.js';
+import { DataPersistence, type AITrader, type AppData } from './services/DataPersistence.js';
 import logger from './utils/logger.js';
 import { generateAdvancedMessage } from './utils/messageGenerator.js';
 
@@ -30,20 +30,23 @@ app.use(express.json());
 // Initialize Data Persistence
 const dataPersistence = new DataPersistence();
 
+// Type definitions
+type TraderStatus = 'analyzing' | 'trading' | 'waiting';
+
 // Initial AI Traders configuration
-const initialAITraders = [
-  { name: 'GROK', balance: 200, status: 'analyzing' as const, strategy: 'Momentum Trading', winRate: 0, trades: 0, totalPnL: 0, color: '#000000' },
-  { name: 'CLAUDE', balance: 200, status: 'analyzing' as const, strategy: 'Mean Reversion', winRate: 0, trades: 0, totalPnL: 0, color: '#f47855' },
-  { name: 'CHATGPT', balance: 200, status: 'analyzing' as const, strategy: 'Trend Following', winRate: 0, trades: 0, totalPnL: 0, color: '#009a57' },
-  { name: 'DEEPSEEK', balance: 200, status: 'analyzing' as const, strategy: 'Statistical Arbitrage', winRate: 0, trades: 0, totalPnL: 0, color: '#396bff' },
-  { name: 'GEMINI', balance: 200, status: 'analyzing' as const, strategy: 'Breakout Trading', winRate: 0, trades: 0, totalPnL: 0, color: '#9068c1' }
+const initialAITraders: AITrader[] = [
+  { name: 'GROK', balance: 200, status: 'analyzing', strategy: 'Momentum Trading', winRate: 0, trades: 0, totalPnL: 0, color: '#000000' },
+  { name: 'CLAUDE', balance: 200, status: 'analyzing', strategy: 'Mean Reversion', winRate: 0, trades: 0, totalPnL: 0, color: '#f47855' },
+  { name: 'CHATGPT', balance: 200, status: 'analyzing', strategy: 'Trend Following', winRate: 0, trades: 0, totalPnL: 0, color: '#009a57' },
+  { name: 'DEEPSEEK', balance: 200, status: 'analyzing', strategy: 'Statistical Arbitrage', winRate: 0, trades: 0, totalPnL: 0, color: '#396bff' },
+  { name: 'GEMINI', balance: 200, status: 'analyzing', strategy: 'Breakout Trading', winRate: 0, trades: 0, totalPnL: 0, color: '#9068c1' }
 ];
 
 // In-memory state
-let appState = {
+let appState: AppData = {
   aiTraders: initialAITraders,
-  chartData: [] as any[],
-  messages: [] as any[],
+  chartData: [],
+  messages: [],
   timeElapsed: 0
 };
 
@@ -93,11 +96,14 @@ function executeTrades() {
     const newWinningTrades = tradeWon ? (trader.winRate * trader.trades / 100) + 1 : (trader.winRate * trader.trades / 100);
     const newWinRate = newTotalTrades > 0 ? (newWinningTrades / newTotalTrades) * 100 : 0;
 
+    const randomStatus = Math.random();
+    const newStatus: TraderStatus = randomStatus > 0.7 ? 'trading' : (randomStatus > 0.5 ? 'analyzing' : 'waiting');
+
     return {
       ...trader,
       balance: newBalance,
       totalPnL: newBalance - 200,
-      status: Math.random() > 0.7 ? ('trading' as const) : (Math.random() > 0.5 ? ('analyzing' as const) : ('waiting' as const)),
+      status: newStatus,
       trades: newTotalTrades,
       winRate: newWinRate
     };

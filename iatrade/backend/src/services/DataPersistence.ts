@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import logger from '../utils/logger.js';
 
-interface AITrader {
+export interface AITrader {
   name: string;
   balance: number;
   status: 'analyzing' | 'trading' | 'waiting';
@@ -13,23 +13,23 @@ interface AITrader {
   color: string;
 }
 
-interface ChartDataPoint {
+export interface ChartDataPoint {
   time: string;
   [key: string]: number | string;
 }
 
-interface TradeMessage {
+export interface TradeMessage {
   trader: string;
   message: string;
   timestamp: string;
 }
 
-interface AppData {
+export interface AppData {
   aiTraders: AITrader[];
   chartData: ChartDataPoint[];
   messages: TradeMessage[];
   timeElapsed: number;
-  lastUpdate: string;
+  lastUpdate?: string;
 }
 
 export class DataPersistence {
