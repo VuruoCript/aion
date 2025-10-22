@@ -34,7 +34,25 @@ iatrade/
 └── README.md
 ```
 
-## 🚀 Instalação
+## ☁️ Deploy
+
+### Quick Deploy Options
+
+**Frontend (Vercel - Recommended):**
+- ✅ Fast, global CDN
+- ✅ Free tier
+- ✅ Easy setup
+- 📖 See: [QUICK_VERCEL_DEPLOY.md](./QUICK_VERCEL_DEPLOY.md)
+
+**Backend (Railway - Recommended):**
+- ✅ WebSocket support
+- ✅ Persistent processes
+- ✅ Real-time trading
+- 📖 See: [VERCEL_FIX.md](./VERCEL_FIX.md)
+
+**⚠️ Important**: Vercel alone won't work for full features. See [VERCEL_FIX.md](./VERCEL_FIX.md) for details.
+
+## 🚀 Instalação Local
 
 ### Pré-requisitos
 
