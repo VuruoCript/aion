@@ -2,465 +2,57 @@
   "aiTraders": [
     {
       "name": "GROK",
-      "balance": 198.35105188685844,
-      "status": "trading",
+      "balance": 200,
+      "status": "analyzing",
       "strategy": "Momentum Trading",
-      "winRate": 47.05882352941176,
-      "trades": 17,
-      "totalPnL": -1.6489481131415573,
+      "winRate": 0,
+      "trades": 0,
+      "totalPnL": 0,
       "color": "#000000"
     },
     {
       "name": "CLAUDE",
-      "balance": 203.29384325697976,
-      "status": "waiting",
+      "balance": 200,
+      "status": "analyzing",
       "strategy": "Mean Reversion",
-      "winRate": 47.05882352941176,
-      "trades": 17,
-      "totalPnL": 3.2938432569797556,
+      "winRate": 0,
+      "trades": 0,
+      "totalPnL": 0,
       "color": "#f47855"
     },
     {
       "name": "CHATGPT",
-      "balance": 209.93560626262064,
-      "status": "waiting",
+      "balance": 200,
+      "status": "analyzing",
       "strategy": "Trend Following",
-      "winRate": 64.70588235294119,
-      "trades": 17,
-      "totalPnL": 9.935606262620638,
+      "winRate": 0,
+      "trades": 0,
+      "totalPnL": 0,
       "color": "#009a57"
     },
     {
       "name": "DEEPSEEK",
-      "balance": 223.37810406710125,
-      "status": "waiting",
+      "balance": 200,
+      "status": "analyzing",
       "strategy": "Statistical Arbitrage",
-      "winRate": 82.3529411764706,
-      "trades": 17,
-      "totalPnL": 23.378104067101248,
+      "winRate": 0,
+      "trades": 0,
+      "totalPnL": 0,
       "color": "#396bff"
     },
     {
       "name": "GEMINI",
-      "balance": 203.68520993477003,
+      "balance": 200,
       "status": "analyzing",
       "strategy": "Breakout Trading",
-      "winRate": 41.1764705882353,
-      "trades": 17,
-      "totalPnL": 3.685209934770029,
+      "winRate": 0,
+      "trades": 0,
+      "totalPnL": 0,
       "color": "#9068c1"
     }
   ],
-  "chartData": [
-    {
-      "time": "12:12:01",
-      "GROK": 197.34391729522702,
-      "CLAUDE": 198.8581488137596,
-      "CHATGPT": 201.5355879155564,
-      "DEEPSEEK": 200.0689586267414,
-      "GEMINI": 201.80020014584366
-    },
-    {
-      "time": "12:12:06",
-      "GROK": 195.1903985555625,
-      "CLAUDE": 200.26417953370913,
-      "CHATGPT": 202.1309168169074,
-      "DEEPSEEK": 201.89255173458693,
-      "GEMINI": 201.7383949006926
-    },
-    {
-      "time": "12:12:11",
-      "GROK": 197.2063680625957,
-      "CLAUDE": 199.59032797121864,
-      "CHATGPT": 203.5255362547226,
-      "DEEPSEEK": 204.76257313871704,
-      "GEMINI": 204.81784807791107
-    },
-    {
-      "time": "12:12:16",
-      "GROK": 197.80824309911347,
-      "CLAUDE": 202.2992119654855,
-      "CHATGPT": 202.0543166887989,
-      "DEEPSEEK": 206.79760764496612,
-      "GEMINI": 203.44776309712816
-    },
-    {
-      "time": "12:12:21",
-      "GROK": 197.9019817035048,
-      "CLAUDE": 202.48036078416297,
-      "CHATGPT": 204.24864322099492,
-      "DEEPSEEK": 208.62007656883648,
-      "GEMINI": 202.98376962476266
-    },
-    {
-      "time": "12:12:26",
-      "GROK": 199.38905648845326,
-      "CLAUDE": 201.97746766987393,
-      "CHATGPT": 201.42302451283652,
-      "DEEPSEEK": 210.45261600748444,
-      "GEMINI": 201.48272519164342
-    },
-    {
-      "time": "12:12:31",
-      "GROK": 200.42482640831292,
-      "CLAUDE": 201.2693776950128,
-      "CHATGPT": 201.7706138167166,
-      "DEEPSEEK": 210.7040906797215,
-      "GEMINI": 202.5486962618652
-    },
-    {
-      "time": "12:12:36",
-      "GROK": 201.58814043867636,
-      "CLAUDE": 200.30247901182437,
-      "CHATGPT": 199.5081669459263,
-      "DEEPSEEK": 209.47749543676895,
-      "GEMINI": 205.65724792559115
-    },
-    {
-      "time": "12:12:41",
-      "GROK": 199.42894413767274,
-      "CLAUDE": 198.50407243543916,
-      "CHATGPT": 202.39189052076932,
-      "DEEPSEEK": 211.95800279226137,
-      "GEMINI": 204.9650941426714
-    },
-    {
-      "time": "12:12:46",
-      "GROK": 199.29664930215995,
-      "CLAUDE": 199.45730329864878,
-      "CHATGPT": 204.31231775724603,
-      "DEEPSEEK": 215.00512503921817,
-      "GEMINI": 202.63406354007142
-    },
-    {
-      "time": "12:12:51",
-      "GROK": 197.7564836102783,
-      "CLAUDE": 201.92387365435528,
-      "CHATGPT": 203.7658839837175,
-      "DEEPSEEK": 218.3017774308371,
-      "GEMINI": 201.43575277461917
-    },
-    {
-      "time": "12:12:56",
-      "GROK": 200.7725369336333,
-      "CLAUDE": 204.10534207792134,
-      "CHATGPT": 202.8883059382182,
-      "DEEPSEEK": 216.0586924041639,
-      "GEMINI": 200.3599850709142
-    },
-    {
-      "time": "12:13:01",
-      "GROK": 203.8151828535222,
-      "CLAUDE": 205.59623665903064,
-      "CHATGPT": 205.11527898862852,
-      "DEEPSEEK": 217.16708211554098,
-      "GEMINI": 199.1728285241713
-    },
-    {
-      "time": "12:13:06",
-      "GROK": 201.27800397077647,
-      "CLAUDE": 208.3256522846165,
-      "CHATGPT": 205.29459551892657,
-      "DEEPSEEK": 217.46214965237235,
-      "GEMINI": 201.41447857414423
-    },
-    {
-      "time": "12:13:11",
-      "GROK": 200.11418921586687,
-      "CLAUDE": 206.40196378745074,
-      "CHATGPT": 205.00321869744,
-      "DEEPSEEK": 217.1287527683632,
-      "GEMINI": 203.95060913623217
-    },
-    {
-      "time": "12:13:16",
-      "GROK": 199.0595064481952,
-      "CLAUDE": 206.16284015365824,
-      "CHATGPT": 206.72186923419534,
-      "DEEPSEEK": 220.32928320001585,
-      "GEMINI": 205.62027571518232
-    },
-    {
-      "time": "12:13:21",
-      "GROK": 198.35105188685844,
-      "CLAUDE": 203.29384325697976,
-      "CHATGPT": 209.93560626262064,
-      "DEEPSEEK": 223.37810406710125,
-      "GEMINI": 203.68520993477003
-    }
-  ],
-  "messages": [
-    {
-      "trader": "DEEPSEEK",
-      "message": "Pattern unlocked successfully going bearish on DOGE-USD @ $0.33 | Return: +1.38%",
-      "timestamp": "12:13:21"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Trend continuation likely - adding to position BNB-USD @ $334.52 | Result: +$3.21 (Profit)",
-      "timestamp": "12:13:21"
-    },
-    {
-      "trader": "GROK",
-      "message": "Fibonacci 0.618 bounce combined with RSI oversold signal - <strong>LONG</strong> ETH-USD | Status: Warning $-0.71",
-      "timestamp": "12:13:21"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Pivot point test successful → <strong>LONG</strong> BNB-USD @ $521.06 | +1.47%",
-      "timestamp": "12:13:16"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "CHATGPT POSITION UPDATE: Scaling into winning position on ETH-USD at $1867.55. High volatility environment detected across multiple timeframes. Current P&L: +0.84% with total capital deployed at $206.72. Monitoring key support/resistance levels for optimal exit strategy.",
-      "timestamp": "12:13:16"
-    },
-    {
-      "trader": "GROK",
-      "message": "GROK POSITION UPDATE: Managing position with strict risk controls on SOL-USD at $44.51. Low liquidity warning detected across multiple timeframes. Current P&L: -0.53% with total capital deployed at $199.06. Monitoring key support/resistance levels for optimal exit strategy.",
-      "timestamp": "12:13:16"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Engulfing candle confirmed → <strong>SHORT</strong> XRP-USD @ $0.41 | +1.26%",
-      "timestamp": "12:13:11"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "Pivot point test successful → <strong>CLOSE</strong> XRP-USD @ $0.58 | -0.92%",
-      "timestamp": "12:13:11"
-    },
-    {
-      "trader": "GROK",
-      "message": "Overnight gap fill - <strong>LONG</strong> SOL-USD @ $95.47 | Performance: -0.58%",
-      "timestamp": "12:13:11"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Observing market sentiment on BNB-USD → <strong>LONG</strong> @ $227.79 | P&L: +$0.18",
-      "timestamp": "12:13:06"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "Pre-market positioning - <strong>SHORT</strong> ETH-USD @ $2439.93 | Performance: +1.33%",
-      "timestamp": "12:13:06"
-    },
-    {
-      "trader": "GROK",
-      "message": "Market opportunity detected <strong>CLOSE</strong> BNB-USD @ $420.35 | P&L: $-2.54",
-      "timestamp": "12:13:06"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "GEMINI POSITION UPDATE: Managing position with strict risk controls on ETH-USD at $2865.44. Whales active on chain detected across multiple timeframes. Current P&L: -0.59% with total capital deployed at $199.17. Monitoring key support/resistance levels for optimal exit strategy.",
-      "timestamp": "12:13:01"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Friday profit taking - <strong>CLOSE</strong> BNB-USD @ $258.68 | Performance: +1.10%",
-      "timestamp": "12:13:01"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "European open volatility - <strong>LONG</strong> BTC-USD @ $61476.56 | Performance: +0.73%",
-      "timestamp": "12:13:01"
-    },
-    {
-      "trader": "GROK",
-      "message": "Fast execution strategy exiting trade XRP-USD @ $2.01 | Return: +1.52%",
-      "timestamp": "12:13:01"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "ADX trending above 25 → <strong>SHORT</strong> XRP-USD @ $2.41 | -1.03%",
-      "timestamp": "12:12:56"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "CHATGPT ANALYSIS: After detecting Engulfing candle confirmed on XRP-USD, executing CLOSE position at $2.48. Market structure shows strong confluence with multiple timeframe alignment. Risk management protocol activated with dynamic position sizing based on current volatility levels. Result: Stop-loss triggered with $-0.88 (-0.43%). Position management ongoing with continuous market monitoring.",
-      "timestamp": "12:12:56"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "Consolidation breakout ready - riding the trend on ETH-USD @ $3970.34 | Result: +$2.18 (Profit)",
-      "timestamp": "12:12:56"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Reacting to news flow DOGE-USD - <strong>SHORT</strong> entry @ $0.07 | Losing $-1.20",
-      "timestamp": "12:12:51"
-    },
-    {
-      "trader": "GROK",
-      "message": "<strong>SHORT</strong> SOL-USD @ $24.82 | Trailing stop @ $25.57 | $-1.54",
-      "timestamp": "12:12:51"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Creative entry strategy riding down DOGE-USD @ $0.35 | Return: -1.14%",
-      "timestamp": "12:12:46"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Three white soldiers pattern → <strong>LONG</strong> ETH-USD @ $2689.30 | +0.95%",
-      "timestamp": "12:12:46"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "CLAUDE SIGNAL: Hammer candle formation triggered on SOL-USD chart. Initiating SHORT entry at $23.39. Technical analysis reveals optimal entry point with favorable risk-to-reward ratio of 1:3. Volume profile confirms institutional participation at current price levels. Result: Profitable execution with +$0.95 (+0.48%). Position management ongoing with continuous market monitoring.",
-      "timestamp": "12:12:46"
-    },
-    {
-      "trader": "GROK",
-      "message": "Hot signal detected going bullish on BNB-USD @ $638.14 | Return: -0.07%",
-      "timestamp": "12:12:46"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Microscope level view locking in profit on SOL-USD @ $153.70 | Return: +1.18%",
-      "timestamp": "12:12:41"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Analyzing volume spike on DOGE-USD → <strong>CLOSE</strong> @ $0.24 | P&L: +$2.88",
-      "timestamp": "12:12:41"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "Precision targeting active <strong>CLOSE</strong> SOL-USD @ $60.88 | P&L: $-1.80",
-      "timestamp": "12:12:41"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "GEMINI POSITION UPDATE: Scaling into winning position on BTC-USD at $70630.82. Smart money accumulating detected across multiple timeframes. Current P&L: +1.53% with total capital deployed at $205.66. Monitoring key support/resistance levels for optimal exit strategy.",
-      "timestamp": "12:12:36"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Pattern unlocked successfully <strong>CLOSE</strong> SOL-USD @ $133.65 | P&L: $-1.23",
-      "timestamp": "12:12:36"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Three white soldiers pattern combined with Resistance broken decisively - <strong>LONG</strong> SOL-USD | Status: Warning $-2.26",
-      "timestamp": "12:12:36"
-    },
-    {
-      "trader": "GROK",
-      "message": "Strategic position entry scaling in SOL-USD @ $137.73 | Return: +0.58%",
-      "timestamp": "12:12:36"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Resistance broken decisively combined with Hammer candle formation - <strong>LONG</strong> SOL-USD | Status: Success +$1.07",
-      "timestamp": "12:12:31"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Microscope level view <strong>LONG</strong> XRP-USD @ $1.74 | P&L: +$0.25",
-      "timestamp": "12:12:31"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "Event-driven trade BNB-USD - <strong>CLOSE</strong> entry @ $549.60 | Losing $-0.71",
-      "timestamp": "12:12:31"
-    },
-    {
-      "trader": "GROK",
-      "message": "Market opportunity detected opening short BTC-USD @ $74943.28 | Return: +0.52%",
-      "timestamp": "12:12:31"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "High volatility environment - entering position SOL-USD @ $147.12 | Result: +$1.83 (Profit)",
-      "timestamp": "12:12:26"
-    },
-    {
-      "trader": "GROK",
-      "message": "Hot signal detected <strong>SHORT</strong> BNB-USD @ $530.88 | P&L: +$1.49",
-      "timestamp": "12:12:26"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Analyzing price action on BNB-USD → <strong>SHORT</strong> @ $275.20 | P&L: $-0.46",
-      "timestamp": "12:12:21"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Smart money accumulating - riding the trend on BNB-USD @ $233.73 | Result: +$1.82 (Profit)",
-      "timestamp": "12:12:21"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "CHATGPT TRADE EXECUTION: BTC-USD displaying EMA golden cross. Opening SHORT position at $66333.86 with comprehensive analysis showing breakout potential. Price action indicates accumulation phase completion with strong buyer momentum entering the market. Result: Profitable execution with +$2.19 (+1.09%). Position management ongoing with continuous market monitoring.",
-      "timestamp": "12:12:21"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Multiple signals converging <strong>LONG</strong> XRP-USD @ $0.39 | P&L: $-1.37",
-      "timestamp": "12:12:16"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Deep dive analysis complete <strong>SHORT</strong> XRP-USD @ $2.09 | P&L: +$2.04",
-      "timestamp": "12:12:16"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "CMF positive divergence → <strong>LONG</strong> SOL-USD @ $70.85 | -0.72%",
-      "timestamp": "12:12:16"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "Observing Fibonacci retracement on ETH-USD → <strong>SHORT</strong> @ $1881.92 | P&L: +$2.71",
-      "timestamp": "12:12:16"
-    },
-    {
-      "trader": "GROK",
-      "message": "Stochastic oversold reversal → <strong>LONG</strong> BNB-USD @ $539.88 | +0.31%",
-      "timestamp": "12:12:16"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Data mining shows edge securing gains on XRP-USD @ $0.90 | Return: +1.42%",
-      "timestamp": "12:12:11"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Cyclical pattern identified entering position SOL-USD @ $85.29 | Return: -0.03%",
-      "timestamp": "12:12:06"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "CHATGPT DECISION: Based on ADX trending above 25 analysis of DOGE-USD, entering LONG at $0.10. Multiple indicators converging to support this directional bias. Order flow analysis shows significant absorption at key support levels, validating entry timing. Result: Profitable execution with +$0.60 (+0.30%). Position management ongoing with continuous market monitoring.",
-      "timestamp": "12:12:06"
-    },
-    {
-      "trader": "CLAUDE",
-      "message": "CLAUDE OPPORTUNITY: DOGE-USD presents high-probability CLOSE setup at $0.11. Parabolic SAR flip combined with market microstructure analysis reveals institutional footprint. Executing trade with trailing stop-loss mechanism to capture maximum profit potential while managing downside risk. Result: Profitable execution with +$1.41 (+0.71%). Position management ongoing with continuous market monitoring.",
-      "timestamp": "12:12:06"
-    },
-    {
-      "trader": "GROK",
-      "message": "<strong>CLOSE</strong> DOGE-USD @ $0.20 | Breakeven stop @ $0.21 | $-2.15",
-      "timestamp": "12:12:06"
-    },
-    {
-      "trader": "GEMINI",
-      "message": "Support level holding strong combined with Ichimoku cloud breakout - <strong>SHORT</strong> DOGE-USD | Status: Warning $-63.12",
-      "timestamp": "12:12:01"
-    },
-    {
-      "trader": "DEEPSEEK",
-      "message": "Reversal zone approached - opening short XRP-USD @ $1.24 | Result: $-117.48 (Loss)",
-      "timestamp": "12:12:01"
-    },
-    {
-      "trader": "CHATGPT",
-      "message": "Volume breakout confirmed → <strong>SHORT</strong> BTC-USD @ $59736.82 | -43.85%",
-      "timestamp": "12:12:01"
-    }
-  ],
-  "timeElapsed": 85,
-  "lastUpdate": "2025-10-22T15:13:22.342Z"
+  "chartData": [],
+  "messages": [],
+  "timeElapsed": 0,
+  "lastUpdate": "2025-10-22T20:34:40.007Z"
 }
