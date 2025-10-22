@@ -36,21 +36,33 @@ iatrade/
 
 ## ☁️ Deploy
 
-### Quick Deploy Options
+### 🚀 Recommended: Render (Full Stack)
 
-**Frontend (Vercel - Recommended):**
+**One-Click Deploy:**
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/VuruoCript/aion)
+
+**Why Render?**
+- ✅ WebSocket support (real-time trading)
+- ✅ Persistent processes (24/7 trading engine)
+- ✅ Free tier (750 hours/month)
+- ✅ PostgreSQL included
+- ✅ Auto-deploy from GitHub
+- 📖 See: [QUICK_RENDER_DEPLOY.md](./QUICK_RENDER_DEPLOY.md)
+
+### Alternative: Vercel (Frontend Only)
+
+**Demo/Testing:**
 - ✅ Fast, global CDN
 - ✅ Free tier
-- ✅ Easy setup
+- ⚠️ No WebSocket (uses polling)
+- ⚠️ No persistent backend
 - 📖 See: [QUICK_VERCEL_DEPLOY.md](./QUICK_VERCEL_DEPLOY.md)
 
-**Backend (Railway - Recommended):**
-- ✅ WebSocket support
-- ✅ Persistent processes
-- ✅ Real-time trading
+**Hybrid Setup (Advanced):**
+- Frontend: Vercel
+- Backend: Render/Railway
 - 📖 See: [VERCEL_FIX.md](./VERCEL_FIX.md)
-
-**⚠️ Important**: Vercel alone won't work for full features. See [VERCEL_FIX.md](./VERCEL_FIX.md) for details.
 
 ## 🚀 Instalação Local
 
