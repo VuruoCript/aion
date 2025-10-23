@@ -70,17 +70,16 @@ function executeTrades() {
   const secondPlace = sortedCompetitors[1];
   const thirdPlace = sortedCompetitors[2];
 
-  // Portfolio pressure: HARD LIMIT at $6k
-  // Strong negative pressure if approaching $6k
-  // Strong positive pressure if approaching $4k
+  // Portfolio pressure: HARD LIMIT at $1150 (never exceed)
+  // Range: $230 to $1150
   let globalPressure = 0;
-  if (totalBalance > 5800) {
-    globalPressure = -0.40; // STRONG negative pressure near $6k
-  } else if (totalBalance > 5500) {
+  if (totalBalance > 1100) {
+    globalPressure = -0.40; // STRONG negative pressure near $1150
+  } else if (totalBalance > 1000) {
     globalPressure = -0.25; // Moderate negative pressure
-  } else if (totalBalance < 4200) {
-    globalPressure = 0.30; // Strong positive pressure near $4k
-  } else if (totalBalance < 4500) {
+  } else if (totalBalance < 280) {
+    globalPressure = 0.30; // Strong positive pressure near $230
+  } else if (totalBalance < 350) {
     globalPressure = 0.15; // Moderate positive pressure
   }
 
@@ -100,14 +99,14 @@ function executeTrades() {
 
     switch(trader.name) {
       case 'GROK':
-        // Always losing (around $150-$200)
-        bias = trader.balance > 190 ? -0.70 : (trader.balance < 140 ? -0.20 : -0.45);
+        // Always losing (around $18-$28)
+        bias = trader.balance > 26 ? -0.70 : (trader.balance < 18 ? -0.20 : -0.45);
         volatility = 2.0;
         break;
 
       case 'CLAUDE':
-        // Always losing (around $130-$170)
-        bias = trader.balance > 160 ? -0.75 : (trader.balance < 120 ? -0.25 : -0.50);
+        // Always losing (around $15-$24)
+        bias = trader.balance > 22 ? -0.75 : (trader.balance < 15 ? -0.25 : -0.50);
         volatility = 2.0;
         break;
 
@@ -162,38 +161,44 @@ function executeTrades() {
     const changePercent = (Math.random() * 2 - 1 + bias) * volatility;
     const change = trader.balance * (changePercent / 100);
 
-    // Calculate new balance with minimum thresholds
+    // Calculate new balance with minimum thresholds for $230-$1150 range
     let minBalance = 50;
-    let maxBalance = 10000; // Default high max
+    let maxBalance = 400; // Default
 
     if (trader.name === 'GROK') {
-      minBalance = 130;
-      maxBalance = 210;
+      minBalance = 15;
+      maxBalance = 30;
     } else if (trader.name === 'CLAUDE') {
-      minBalance = 110;
-      maxBalance = 180;
+      minBalance = 12;
+      maxBalance = 26;
     } else if (trader.name === 'CHATGPT') {
-      minBalance = 800;
-      maxBalance = 2200;
+      minBalance = 140;
+      maxBalance = 380;
     } else if (trader.name === 'DEEPSEEK') {
-      minBalance = 700;
-      maxBalance = 2100;
+      minBalance = 130;
+      maxBalance = 370;
     } else if (trader.name === 'GEMINI') {
-      minBalance = 600;
-      maxBalance = 2000;
+      minBalance = 120;
+      maxBalance = 360;
     }
 
     let newBalance = trader.balance + change;
     newBalance = Math.max(minBalance, Math.min(maxBalance, newBalance));
 
-    // HARD CAP: If total would exceed $6000, reduce this trader's balance
+    // HARD CAP: If total would exceed $1150, reduce this trader's balance
     const projectedTotal = appState.aiTraders.reduce((sum, t) =>
       t.name === trader.name ? sum + newBalance : sum + t.balance, 0
     );
 
-    if (projectedTotal > 6000) {
-      const excess = projectedTotal - 6000;
+    if (projectedTotal > 1150) {
+      const excess = projectedTotal - 1150;
       newBalance = Math.max(minBalance, newBalance - excess * 0.5);
+    }
+
+    // HARD FLOOR: If total would go below $230, boost this trader's balance
+    if (projectedTotal < 230) {
+      const deficit = 230 - projectedTotal;
+      newBalance = Math.min(maxBalance, newBalance + deficit * 0.5);
     }
 
     const tradeWon = change > 0;
