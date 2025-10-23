@@ -58,10 +58,31 @@ let runtimeInterval: NodeJS.Timeout | null = null;
 // Keep track of previous balances for message generation
 const previousBalances: { [key: string]: number } = {};
 
-// Trading logic
+// Trading logic with competitive AI system
 function executeTrades() {
   // Calculate current total portfolio value
   const totalBalance = appState.aiTraders.reduce((sum, t) => sum + t.balance, 0);
+
+  // Find the current leader (exclude GROK and CLAUDE - they always lose)
+  const competitors = appState.aiTraders.filter(t => t.name !== 'GROK' && t.name !== 'CLAUDE');
+  const sortedCompetitors = [...competitors].sort((a, b) => b.balance - a.balance);
+  const leader = sortedCompetitors[0];
+  const secondPlace = sortedCompetitors[1];
+  const thirdPlace = sortedCompetitors[2];
+
+  // Portfolio pressure: HARD LIMIT at $6k
+  // Strong negative pressure if approaching $6k
+  // Strong positive pressure if approaching $4k
+  let globalPressure = 0;
+  if (totalBalance > 5800) {
+    globalPressure = -0.40; // STRONG negative pressure near $6k
+  } else if (totalBalance > 5500) {
+    globalPressure = -0.25; // Moderate negative pressure
+  } else if (totalBalance < 4200) {
+    globalPressure = 0.30; // Strong positive pressure near $4k
+  } else if (totalBalance < 4500) {
+    globalPressure = 0.15; // Moderate positive pressure
+  }
 
   appState.aiTraders = appState.aiTraders.map(trader => {
     // Initialize previous balance if not exists
@@ -69,59 +90,112 @@ function executeTrades() {
       previousBalances[trader.name] = trader.balance;
     }
 
-    // Dynamic bias based on portfolio total to maintain $4k-$6k range
-    // If total > $5500, push more traders negative
-    // If total < $4500, push more traders positive
     let bias = 0;
-    let volatility = 2.5;
-    const portfolioPressure = totalBalance > 5500 ? -0.15 : totalBalance < 4500 ? 0.15 : 0;
+    let volatility = 3.0;
+
+    // Competition logic: Leader gets pushed down, others get pushed up
+    const isLeader = trader.name === leader?.name;
+    const isSecond = trader.name === secondPlace?.name;
+    const isThird = trader.name === thirdPlace?.name;
 
     switch(trader.name) {
       case 'GROK':
-        // Keep in negative territory (around $150-$200)
-        bias = trader.balance > 200 ? -0.60 : (trader.balance < 150 ? -0.30 : -0.45);
-        volatility = 2.2;
+        // Always losing (around $150-$200)
+        bias = trader.balance > 190 ? -0.70 : (trader.balance < 140 ? -0.20 : -0.45);
+        volatility = 2.0;
         break;
+
       case 'CLAUDE':
-        // Keep in negative territory (around $130-$170)
-        bias = trader.balance > 170 ? -0.65 : (trader.balance < 130 ? -0.35 : -0.50);
-        volatility = 2.3;
+        // Always losing (around $130-$170)
+        bias = trader.balance > 160 ? -0.75 : (trader.balance < 120 ? -0.25 : -0.50);
+        volatility = 2.0;
         break;
+
       case 'CHATGPT':
-        // Best performer (around $1700-$1900)
-        bias = trader.balance > 1900 ? -0.25 : (trader.balance < 1700 ? 0.05 : -0.10);
-        bias += portfolioPressure;
-        volatility = 2.8;
+        // Competitive AI
+        if (isLeader) {
+          // Leader gets pushed down to create competition
+          bias = -0.35;
+        } else if (isSecond) {
+          // Second place gets boost to challenge leader
+          bias = 0.10;
+        } else {
+          // Third place gets strong boost to catch up
+          bias = 0.20;
+        }
+        bias += globalPressure;
+        volatility = 3.5;
         break;
+
       case 'DEEPSEEK':
-        // Strong performer (around $1500-$1650)
-        bias = trader.balance > 1650 ? -0.30 : (trader.balance < 1500 ? 0.00 : -0.15);
-        bias += portfolioPressure;
-        volatility = 2.6;
+        // Competitive AI
+        if (isLeader) {
+          bias = -0.30;
+        } else if (isSecond) {
+          bias = 0.15;
+        } else {
+          bias = 0.25;
+        }
+        bias += globalPressure;
+        volatility = 3.5;
         break;
+
       case 'GEMINI':
-        // Solid performer (around $1250-$1400)
-        bias = trader.balance > 1400 ? -0.35 : (trader.balance < 1250 ? -0.05 : -0.20);
-        bias += portfolioPressure;
-        volatility = 2.7;
+        // Competitive AI
+        if (isLeader) {
+          bias = -0.32;
+        } else if (isSecond) {
+          bias = 0.12;
+        } else {
+          bias = 0.22;
+        }
+        bias += globalPressure;
+        volatility = 3.5;
         break;
+
       default:
-        bias = -0.15;
+        bias = 0;
         volatility = 2.5;
     }
 
-    const changePercent = (Math.random() + bias) * volatility;
+    // Calculate change with volatility
+    const changePercent = (Math.random() * 2 - 1 + bias) * volatility;
     const change = trader.balance * (changePercent / 100);
 
-    // Set minimum balance thresholds per trader
+    // Calculate new balance with minimum thresholds
     let minBalance = 50;
-    if (trader.name === 'GROK') minBalance = 140;
-    if (trader.name === 'CLAUDE') minBalance = 120;
-    if (trader.name === 'CHATGPT') minBalance = 1600;
-    if (trader.name === 'DEEPSEEK') minBalance = 1400;
-    if (trader.name === 'GEMINI') minBalance = 1200;
+    let maxBalance = 10000; // Default high max
 
-    const newBalance = Math.max(minBalance, trader.balance + change);
+    if (trader.name === 'GROK') {
+      minBalance = 130;
+      maxBalance = 210;
+    } else if (trader.name === 'CLAUDE') {
+      minBalance = 110;
+      maxBalance = 180;
+    } else if (trader.name === 'CHATGPT') {
+      minBalance = 800;
+      maxBalance = 2200;
+    } else if (trader.name === 'DEEPSEEK') {
+      minBalance = 700;
+      maxBalance = 2100;
+    } else if (trader.name === 'GEMINI') {
+      minBalance = 600;
+      maxBalance = 2000;
+    }
+
+    let newBalance = trader.balance + change;
+    newBalance = Math.max(minBalance, Math.min(maxBalance, newBalance));
+
+    // HARD CAP: If total would exceed $6000, reduce this trader's balance
+    const projectedTotal = appState.aiTraders.reduce((sum, t) =>
+      t.name === trader.name ? sum + newBalance : sum + t.balance, 0
+    );
+
+    if (projectedTotal > 6000) {
+      const excess = projectedTotal - 6000;
+      newBalance = Math.max(minBalance, newBalance - excess * 0.5);
+    }
+
     const tradeWon = change > 0;
 
     // Generate advanced message with 1000+ variations (70% chance)
