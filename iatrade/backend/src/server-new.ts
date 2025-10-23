@@ -58,13 +58,33 @@ let runtimeInterval: NodeJS.Timeout | null = null;
 // Keep track of previous balances for message generation
 const previousBalances: { [key: string]: number } = {};
 
-// Trading logic with competitive AI system
+// Rotation system: Track which AIs are currently in "losing mode"
+let currentLosingAIs: string[] = ['GROK', 'CLAUDE'];
+let rotationCounter = 0;
+const ROTATION_INTERVAL = 120; // Change losing AIs every 120 trades (~10 minutes)
+
+// Trading logic with competitive AI system and dynamic rotation
 function executeTrades() {
+  // Rotation system: Change which AIs are "losing" periodically
+  rotationCounter++;
+  if (rotationCounter >= ROTATION_INTERVAL) {
+    rotationCounter = 0;
+
+    // All AIs that can participate in rotation
+    const allAIs = ['GROK', 'CLAUDE', 'CHATGPT', 'DEEPSEEK', 'GEMINI'];
+
+    // Randomly pick 2 different AIs to be the "losers" for next period
+    const shuffled = allAIs.sort(() => Math.random() - 0.5);
+    currentLosingAIs = [shuffled[0], shuffled[1]];
+
+    logger.info(`🔄 AI Rotation: ${currentLosingAIs.join(' & ')} now in losing mode`);
+  }
+
   // Calculate current total portfolio value
   const totalBalance = appState.aiTraders.reduce((sum, t) => sum + t.balance, 0);
 
-  // Find the current leader (exclude GROK and CLAUDE - they always lose)
-  const competitors = appState.aiTraders.filter(t => t.name !== 'GROK' && t.name !== 'CLAUDE');
+  // Find the current leader (exclude current losing AIs)
+  const competitors = appState.aiTraders.filter(t => !currentLosingAIs.includes(t.name));
   const sortedCompetitors = [...competitors].sort((a, b) => b.balance - a.balance);
   const leader = sortedCompetitors[0];
   const secondPlace = sortedCompetitors[1];
@@ -97,89 +117,49 @@ function executeTrades() {
     const isSecond = trader.name === secondPlace?.name;
     const isThird = trader.name === thirdPlace?.name;
 
-    switch(trader.name) {
-      case 'GROK':
-        // Always losing (around $18-$28)
-        bias = trader.balance > 26 ? -0.70 : (trader.balance < 18 ? -0.20 : -0.45);
-        volatility = 2.0;
-        break;
+    // Dynamic behavior based on whether AI is currently in "losing mode"
+    const isLosingAI = currentLosingAIs.includes(trader.name);
 
-      case 'CLAUDE':
-        // Always losing (around $15-$24)
-        bias = trader.balance > 22 ? -0.75 : (trader.balance < 15 ? -0.25 : -0.50);
-        volatility = 2.0;
-        break;
-
-      case 'CHATGPT':
-        // Competitive AI
-        if (isLeader) {
-          // Leader gets pushed down to create competition
-          bias = -0.35;
-        } else if (isSecond) {
-          // Second place gets boost to challenge leader
-          bias = 0.10;
-        } else {
-          // Third place gets strong boost to catch up
-          bias = 0.20;
-        }
-        bias += globalPressure;
-        volatility = 3.5;
-        break;
-
-      case 'DEEPSEEK':
-        // Competitive AI
-        if (isLeader) {
-          bias = -0.30;
-        } else if (isSecond) {
-          bias = 0.15;
-        } else {
-          bias = 0.25;
-        }
-        bias += globalPressure;
-        volatility = 3.5;
-        break;
-
-      case 'GEMINI':
-        // Competitive AI
-        if (isLeader) {
-          bias = -0.32;
-        } else if (isSecond) {
-          bias = 0.12;
-        } else {
-          bias = 0.22;
-        }
-        bias += globalPressure;
-        volatility = 3.5;
-        break;
-
-      default:
+    if (isLosingAI) {
+      // This AI is currently in losing mode (changes every ~10 minutes)
+      bias = trader.balance > 30 ? -0.70 : (trader.balance < 15 ? -0.20 : -0.45);
+      volatility = 2.0;
+    } else {
+      // Competitive AI - use position-based logic
+      if (isLeader) {
+        // Leader gets pushed down to create competition
+        bias = -0.35;
+      } else if (isSecond) {
+        // Second place gets boost to challenge leader
+        bias = 0.10;
+      } else if (isThird) {
+        // Third place gets strong boost to catch up
+        bias = 0.20;
+      } else {
+        // Fallback
         bias = 0;
-        volatility = 2.5;
+      }
+      bias += globalPressure;
+      volatility = 3.5;
     }
 
     // Calculate change with volatility
     const changePercent = (Math.random() * 2 - 1 + bias) * volatility;
     const change = trader.balance * (changePercent / 100);
 
-    // Calculate new balance with minimum thresholds for $230-$1150 range
-    let minBalance = 50;
-    let maxBalance = 400; // Default
+    // Calculate new balance with dynamic thresholds for $230-$1150 range
+    // Losing AIs have lower limits, winners have higher limits
+    let minBalance: number;
+    let maxBalance: number;
 
-    if (trader.name === 'GROK') {
-      minBalance = 15;
-      maxBalance = 30;
-    } else if (trader.name === 'CLAUDE') {
+    if (isLosingAI) {
+      // Currently losing - low limits
       minBalance = 12;
-      maxBalance = 26;
-    } else if (trader.name === 'CHATGPT') {
-      minBalance = 140;
-      maxBalance = 380;
-    } else if (trader.name === 'DEEPSEEK') {
-      minBalance = 130;
-      maxBalance = 370;
-    } else if (trader.name === 'GEMINI') {
+      maxBalance = 40;
+    } else {
+      // Currently competing - higher limits
       minBalance = 120;
-      maxBalance = 360;
+      maxBalance = 380;
     }
 
     let newBalance = trader.balance + change;
