@@ -60,45 +60,68 @@ const previousBalances: { [key: string]: number } = {};
 
 // Trading logic
 function executeTrades() {
+  // Calculate current total portfolio value
+  const totalBalance = appState.aiTraders.reduce((sum, t) => sum + t.balance, 0);
+
   appState.aiTraders = appState.aiTraders.map(trader => {
     // Initialize previous balance if not exists
     if (!previousBalances[trader.name]) {
       previousBalances[trader.name] = trader.balance;
     }
 
-    // Different risk profiles for each AI to make it more realistic
+    // Dynamic bias based on portfolio total to maintain $4k-$6k range
+    // If total > $5500, push more traders negative
+    // If total < $4500, push more traders positive
     let bias = 0;
-    let volatility = 3;
+    let volatility = 2.5;
+    const portfolioPressure = totalBalance > 5500 ? -0.15 : totalBalance < 4500 ? 0.15 : 0;
 
     switch(trader.name) {
       case 'GROK':
-        bias = -0.55; // Losses - stay in negative territory
-        volatility = 2.4;
+        // Keep in negative territory (around $150-$200)
+        bias = trader.balance > 200 ? -0.60 : (trader.balance < 150 ? -0.30 : -0.45);
+        volatility = 2.2;
         break;
       case 'CLAUDE':
-        bias = -0.60; // Heavy losses - will go negative from high balance
-        volatility = 3.0;
+        // Keep in negative territory (around $130-$170)
+        bias = trader.balance > 170 ? -0.65 : (trader.balance < 130 ? -0.35 : -0.50);
+        volatility = 2.3;
         break;
       case 'CHATGPT':
-        bias = -0.42; // Moderate gains - will rise
-        volatility = 2.6;
+        // Best performer (around $1700-$1900)
+        bias = trader.balance > 1900 ? -0.25 : (trader.balance < 1700 ? 0.05 : -0.10);
+        bias += portfolioPressure;
+        volatility = 2.8;
         break;
       case 'DEEPSEEK':
-        bias = -0.48; // Small gains - slight growth
-        volatility = 2.5;
+        // Strong performer (around $1500-$1650)
+        bias = trader.balance > 1650 ? -0.30 : (trader.balance < 1500 ? 0.00 : -0.15);
+        bias += portfolioPressure;
+        volatility = 2.6;
         break;
       case 'GEMINI':
-        bias = -0.45; // Moderate gains - will rise
+        // Solid performer (around $1250-$1400)
+        bias = trader.balance > 1400 ? -0.35 : (trader.balance < 1250 ? -0.05 : -0.20);
+        bias += portfolioPressure;
         volatility = 2.7;
         break;
       default:
-        bias = -0.51;
+        bias = -0.15;
         volatility = 2.5;
     }
 
     const changePercent = (Math.random() + bias) * volatility;
     const change = trader.balance * (changePercent / 100);
-    const newBalance = Math.max(50, trader.balance + change);
+
+    // Set minimum balance thresholds per trader
+    let minBalance = 50;
+    if (trader.name === 'GROK') minBalance = 140;
+    if (trader.name === 'CLAUDE') minBalance = 120;
+    if (trader.name === 'CHATGPT') minBalance = 1600;
+    if (trader.name === 'DEEPSEEK') minBalance = 1400;
+    if (trader.name === 'GEMINI') minBalance = 1200;
+
+    const newBalance = Math.max(minBalance, trader.balance + change);
     const tradeWon = change > 0;
 
     // Generate advanced message with 1000+ variations (70% chance)
