@@ -66,7 +66,37 @@ function executeTrades() {
       previousBalances[trader.name] = trader.balance;
     }
 
-    const changePercent = (Math.random() - 0.47) * 3;
+    // Different risk profiles for each AI to make it more realistic
+    let bias = 0;
+    let volatility = 3;
+
+    switch(trader.name) {
+      case 'GROK':
+        bias = -0.65; // Losing - will decline steadily
+        volatility = 3.5;
+        break;
+      case 'CLAUDE':
+        bias = -0.35; // Winning - making profits
+        volatility = 3.2;
+        break;
+      case 'CHATGPT':
+        bias = -0.60; // Losing - declining
+        volatility = 3.4;
+        break;
+      case 'DEEPSEEK':
+        bias = -0.30; // Winning - strong performance
+        volatility = 3.0;
+        break;
+      case 'GEMINI':
+        bias = -0.50; // Neutral - balanced performance
+        volatility = 2.8;
+        break;
+      default:
+        bias = -0.50;
+        volatility = 3.0;
+    }
+
+    const changePercent = (Math.random() + bias) * volatility;
     const change = trader.balance * (changePercent / 100);
     const newBalance = Math.max(50, trader.balance + change);
     const tradeWon = change > 0;
