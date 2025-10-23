@@ -58,128 +58,58 @@ let runtimeInterval: NodeJS.Timeout | null = null;
 // Keep track of previous balances for message generation
 const previousBalances: { [key: string]: number } = {};
 
-// Rotation system: Track which AIs are currently in "losing mode"
-let currentLosingAIs: string[] = ['GROK', 'CLAUDE'];
-let rotationCounter = 0;
-const ROTATION_INTERVAL = 120; // Change losing AIs every 120 trades (~10 minutes)
+// Independent cycle system: Each AI has its own wave cycle
+interface AICycle {
+  phase: number;        // 0-1, where in the cycle (0=bottom, 0.5=peak, 1=bottom again)
+  speed: number;        // How fast it moves through the cycle
+  amplitude: number;    // How much it varies (distance from center)
+  offset: number;       // Starting offset to desynchronize from others
+}
 
-// Trading logic with competitive AI system and dynamic rotation
+// Initialize each AI with different cycle parameters (descoladas)
+const aiCycles: { [key: string]: AICycle } = {
+  GROK: { phase: 0.65, speed: 0.012, amplitude: 300, offset: 0.0 },     // Starting high, will fall
+  CLAUDE: { phase: 0.20, speed: 0.015, amplitude: 280, offset: 0.2 },   // Starting low, will rise
+  CHATGPT: { phase: 0.45, speed: 0.010, amplitude: 320, offset: 0.4 },  // Mid cycle
+  DEEPSEEK: { phase: 0.95, speed: 0.013, amplitude: 310, offset: 0.6 }, // Bottom, will rise fast
+  GEMINI: { phase: 0.50, speed: 0.011, amplitude: 290, offset: 0.8 }    // Peak, will fall
+};
+
+// Trading logic with independent wave cycles for each AI
 function executeTrades() {
-  // Rotation system: Change which AIs are "losing" periodically
-  rotationCounter++;
-  if (rotationCounter >= ROTATION_INTERVAL) {
-    rotationCounter = 0;
-
-    // All AIs that can participate in rotation
-    const allAIs = ['GROK', 'CLAUDE', 'CHATGPT', 'DEEPSEEK', 'GEMINI'];
-
-    // Randomly pick 2 different AIs to be the "losers" for next period
-    const shuffled = allAIs.sort(() => Math.random() - 0.5);
-    currentLosingAIs = [shuffled[0], shuffled[1]];
-
-    logger.info(`🔄 AI Rotation: ${currentLosingAIs.join(' & ')} now in losing mode`);
-  }
-
-  // Calculate current total portfolio value
-  const totalBalance = appState.aiTraders.reduce((sum, t) => sum + t.balance, 0);
-
-  // Find the current leader (exclude current losing AIs)
-  const competitors = appState.aiTraders.filter(t => !currentLosingAIs.includes(t.name));
-  const sortedCompetitors = [...competitors].sort((a, b) => b.balance - a.balance);
-  const leader = sortedCompetitors[0];
-  const secondPlace = sortedCompetitors[1];
-  const thirdPlace = sortedCompetitors[2];
-
-  // Portfolio pressure: HARD LIMIT at $1150 (never exceed)
-  // Range: $230 to $1150
-  let globalPressure = 0;
-  if (totalBalance > 1100) {
-    globalPressure = -0.40; // STRONG negative pressure near $1150
-  } else if (totalBalance > 1000) {
-    globalPressure = -0.25; // Moderate negative pressure
-  } else if (totalBalance < 280) {
-    globalPressure = 0.30; // Strong positive pressure near $230
-  } else if (totalBalance < 350) {
-    globalPressure = 0.15; // Moderate positive pressure
-  }
-
   appState.aiTraders = appState.aiTraders.map(trader => {
     // Initialize previous balance if not exists
     if (!previousBalances[trader.name]) {
       previousBalances[trader.name] = trader.balance;
     }
 
-    let bias = 0;
-    let volatility = 3.0;
+    // Get this AI's cycle parameters
+    const cycle = aiCycles[trader.name];
+    if (!cycle) return trader; // Safety check
 
-    // Competition logic: Leader gets pushed down, others get pushed up
-    const isLeader = trader.name === leader?.name;
-    const isSecond = trader.name === secondPlace?.name;
-    const isThird = trader.name === thirdPlace?.name;
+    // Update phase (move through the cycle)
+    cycle.phase += cycle.speed;
+    if (cycle.phase > 1) cycle.phase -= 1; // Wrap around
 
-    // Dynamic behavior based on whether AI is currently in "losing mode"
-    const isLosingAI = currentLosingAIs.includes(trader.name);
+    // Calculate target balance using sine wave for smooth movement
+    // Center point: 875 (middle of 500-1250 range)
+    // Sine wave goes from -1 to +1, multiply by amplitude
+    const centerBalance = 875;
+    const waveValue = Math.sin((cycle.phase + cycle.offset) * Math.PI * 2);
+    const targetBalance = centerBalance + (waveValue * cycle.amplitude);
 
-    if (isLosingAI) {
-      // This AI is currently in losing mode (changes every ~10 minutes)
-      bias = trader.balance > 30 ? -0.70 : (trader.balance < 15 ? -0.20 : -0.45);
-      volatility = 2.0;
-    } else {
-      // Competitive AI - use position-based logic
-      if (isLeader) {
-        // Leader gets pushed down to create competition
-        bias = -0.35;
-      } else if (isSecond) {
-        // Second place gets boost to challenge leader
-        bias = 0.10;
-      } else if (isThird) {
-        // Third place gets strong boost to catch up
-        bias = 0.20;
-      } else {
-        // Fallback
-        bias = 0;
-      }
-      bias += globalPressure;
-      volatility = 3.5;
-    }
+    // Smooth transition to target (prevents jerky movements)
+    const smoothingFactor = 0.15; // Lower = smoother, higher = faster response
+    const currentBalance = trader.balance;
+    const balanceDiff = targetBalance - currentBalance;
+    const change = balanceDiff * smoothingFactor;
 
-    // Calculate change with volatility
-    const changePercent = (Math.random() * 2 - 1 + bias) * volatility;
-    const change = trader.balance * (changePercent / 100);
+    // Add small random noise for realism (±1%)
+    const noise = (Math.random() - 0.5) * currentBalance * 0.01;
+    let newBalance = currentBalance + change + noise;
 
-    // Calculate new balance with dynamic thresholds for $230-$1150 range
-    // Losing AIs have lower limits, winners have higher limits
-    let minBalance: number;
-    let maxBalance: number;
-
-    if (isLosingAI) {
-      // Currently losing - low limits
-      minBalance = 12;
-      maxBalance = 40;
-    } else {
-      // Currently competing - higher limits
-      minBalance = 120;
-      maxBalance = 380;
-    }
-
-    let newBalance = trader.balance + change;
-    newBalance = Math.max(minBalance, Math.min(maxBalance, newBalance));
-
-    // HARD CAP: If total would exceed $1150, reduce this trader's balance
-    const projectedTotal = appState.aiTraders.reduce((sum, t) =>
-      t.name === trader.name ? sum + newBalance : sum + t.balance, 0
-    );
-
-    if (projectedTotal > 1150) {
-      const excess = projectedTotal - 1150;
-      newBalance = Math.max(minBalance, newBalance - excess * 0.5);
-    }
-
-    // HARD FLOOR: If total would go below $230, boost this trader's balance
-    if (projectedTotal < 230) {
-      const deficit = 230 - projectedTotal;
-      newBalance = Math.min(maxBalance, newBalance + deficit * 0.5);
-    }
+    // Enforce individual AI limits: $500 to $1250 per AI
+    newBalance = Math.max(500, Math.min(1250, newBalance));
 
     const tradeWon = change > 0;
 
