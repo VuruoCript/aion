@@ -197,6 +197,7 @@ const App: React.FC = () => {
   const [chartTimeframe, setChartTimeframe] = useState<'ALL' | '15M' | '1H' | '4H'>('ALL');
   const [chartDisplayMode, setChartDisplayMode] = useState<'$' | '%'>('$');
   const [hoveredTrader, setHoveredTrader] = useState<string | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1); // 1 = 100%, 0.5 = 50%, 2 = 200%
   const [copied, setCopied] = useState(false);
 
   const CONTRACT_ADDRESS = '0xc52469466e4b7cc92c6410a7ad40165ce3974444';
@@ -335,6 +336,34 @@ const App: React.FC = () => {
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : 'light';
   }, [darkMode]);
+
+  // Chart zoom with mouse wheel
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      // Check if the mouse is over the chart area
+      const target = e.target as HTMLElement;
+      const chartContainer = target.closest('.recharts-wrapper');
+
+      if (chartContainer) {
+        e.preventDefault();
+
+        // Zoom in/out based on scroll direction
+        setZoomLevel(prev => {
+          const delta = e.deltaY > 0 ? -0.1 : 0.1; // Scroll down = zoom out, scroll up = zoom in
+          const newZoom = prev + delta;
+          // Limit zoom between 0.5x (50%) and 3x (300%)
+          return Math.max(0.5, Math.min(3, newZoom));
+        });
+      }
+    };
+
+    // Add event listener with passive: false to allow preventDefault
+    window.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
 
   // Loading Screen - Keep black for loading
   if (loading) {
@@ -739,7 +768,7 @@ const App: React.FC = () => {
                 </button>
               </div>
               </div>
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-2 mb-4 items-center">
                 <button
                   onClick={() => setChartDisplayMode('$')}
                   className={`px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold rounded ${chartDisplayMode === '$' ? (darkMode ? 'bg-[#00d28a] text-black' : 'bg-black text-white') : (darkMode ? 'border border-[#00d28a] text-white' : 'border border-black text-black')}`}
@@ -752,25 +781,31 @@ const App: React.FC = () => {
                 >
                   %
                 </button>
+                <div className={`ml-4 px-3 py-1.5 text-[10px] sm:text-xs font-bold rounded ${darkMode ? 'border border-[#00d28a] text-[#00d28a]' : 'border border-black text-black'}`}>
+                  🔍 {(zoomLevel * 100).toFixed(0)}%
+                </div>
               </div>
             </div>
             <div className="h-[300px] sm:h-[400px] lg:h-[500px] w-full">
               {(() => {
-                // Filter chart data based on timeframe
+                // Filter chart data based on timeframe and zoom level
                 const filteredChartData = (() => {
+                  let basePoints;
+
                   if (chartTimeframe === 'ALL') {
                     // Even in ALL mode, limit to last 100 points to keep chart readable
                     // 100 points = ~8.3 minutes of data (1 point every 5 seconds)
-                    return chartData.slice(-100);
+                    basePoints = 100;
+                  } else {
+                    const timeframeMinutes = chartTimeframe === '15M' ? 15 : chartTimeframe === '1H' ? 60 : 240;
+                    const pointsPerMinute = 12; // 1 point every 5 seconds = 12 points per minute
+                    basePoints = Math.ceil(timeframeMinutes * pointsPerMinute);
                   }
 
-                  const timeframeMinutes = chartTimeframe === '15M' ? 15 : chartTimeframe === '1H' ? 60 : 240;
+                  // Apply zoom level: zoom in = fewer points (more detail), zoom out = more points (wider view)
+                  const zoomedPoints = Math.ceil(basePoints / zoomLevel);
 
-                  // Since we don't have timestamps, use last N points (approximate)
-                  const pointsPerMinute = 12; // 1 point every 5 seconds = 12 points per minute
-                  const pointsToShow = Math.ceil(timeframeMinutes * pointsPerMinute);
-
-                  return chartData.slice(-pointsToShow);
+                  return chartData.slice(-zoomedPoints);
                 })();
 
                 return (
