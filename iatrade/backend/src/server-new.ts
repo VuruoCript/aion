@@ -72,28 +72,28 @@ function executeTrades() {
 
     switch(trader.name) {
       case 'GROK':
-        bias = -0.65; // Losing - will decline steadily
-        volatility = 3.5;
+        bias = -0.52; // Slight losses - will decline slowly
+        volatility = 2.5;
         break;
       case 'CLAUDE':
-        bias = -0.35; // Winning - making profits
-        volatility = 3.2;
+        bias = -0.54; // Moderate losses - needs to come down from high balance
+        volatility = 2.7;
         break;
       case 'CHATGPT':
-        bias = -0.60; // Losing - declining
-        volatility = 3.4;
+        bias = -0.48; // Small gains - will grow slightly
+        volatility = 2.4;
         break;
       case 'DEEPSEEK':
-        bias = -0.30; // Winning - strong performance
-        volatility = 3.0;
+        bias = -0.53; // Moderate losses - needs to come down from high balance
+        volatility = 2.6;
         break;
       case 'GEMINI':
         bias = -0.50; // Neutral - balanced performance
-        volatility = 2.8;
+        volatility = 2.3;
         break;
       default:
-        bias = -0.50;
-        volatility = 3.0;
+        bias = -0.51;
+        volatility = 2.5;
     }
 
     const changePercent = (Math.random() + bias) * volatility;
